@@ -1,0 +1,19 @@
+.btn:focus, .btn:active {
+  outline: none !important;
+}
+
+::selection { background: transparent; }
+
+table {
+  border: none;
+  text-align: center;
+}
+
+.game-ctr button {
+  width: auto;
+}
+
+td {
+  width: 30px;
+  height: 30px;
+}
