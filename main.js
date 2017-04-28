@@ -92,12 +92,7 @@ $(document).ready(function(){
 
 
 
-    newboard();
-
-
-    $('#printtc').click(function() {
-      console.log(totalpig);
-    });
+    // newboard();
 
     // $("#" + pigspot).html('hi');
     // console.log("pig: " + $("#" + pigspot).splice(-2));
@@ -109,10 +104,10 @@ $(document).ready(function(){
 
   function winner() {
     win = Number(win + 1);
-    var currentwins = $("#scorebar").css("width").charAt(2);
-    var newwins = (currentwins + 2) + "%";
-    console.log(newwins);
-    $("#scorebar").css("width", newwins);
+    // var currentwins = $("#scorebar").css("width").charAt(2);
+    // var newwins = (currentwins + 2) + "%";
+    // console.log(newwins);
+    // $("#scorebar").css("width", newwins);
     document.getElementById("wincount").innerHTML = win;
     // $(fsquare).html('<br />');
     // $(f2square).html('<br />');
@@ -130,10 +125,35 @@ $(document).ready(function(){
     // var f3square = "#tc" + rc4;
     // var icsquare = "#tc" + rc5;
 
+    if (document.getElementById("wincount").innerHTML <= document.getElementById("totalwins").innerHTML) {
+
+    } else {
+      document.getElementById("totalwins").innerHTML = win;
+    }
+
     newboard();
   }
 
+  var highscores = 0;
+
+  function starttimer() {
+    var timeremain = 0;
+    var timer = setInterval(function(){
+      timeremain = Number(timeremain + 5);
+      $('.progress-bar-danger').css('width', timeremain + "%")
+    }, 1000);
+    setTimeout(function(){
+      clearInterval(timer);
+      $('#highscoresMODAL').modal({backdrop: "static"});
+      $('.progress-bar-danger').css('width', "100%");
+      highscores = 1;
+    }, 20000);
+  }
+
+
+
   $(document).keydown(function(e) {
+    if (highscores == 0) {
 
     var fire1spot = $('.fire1').parent().attr('id');
     var firstfire1char = fire1spot.charAt(2);
@@ -162,13 +182,15 @@ $(document).ready(function(){
       if (totalpig <= 5) {
         console.log('cant move');
       } else if ((totalpig - 5) == totalfire1 || (totalpig - 5) == totalfire2 || (totalpig - 5) == totalfire3) {
-        location.reload();
+        newboard();
       } else if ((totalpig - 5) == totalicecream) {
         winner();
       } else if (((totalpig - 5) <= 25) && ((totalpig - 5) >= 1)) {
         if (totalpig < 10) {
+          // $("#tc0" + totalpig).fadeOut();
           $("#tc0" + totalpig).html('<br />');
         } else {
+          // $("#tc0" + totalpig).fadeOut();
           $("#tc" + totalpig).html('<br />');
         }
         totalpig = totalpig - 5;
@@ -183,7 +205,7 @@ $(document).ready(function(){
     if (totalpig > 20) {
       console.log('cant move');
     } else if ((totalpig + 5) == totalfire1 || (totalpig + 5) == totalfire2 || (totalpig + 5) == totalfire3) {
-      location.reload();
+      newboard();
     } else if ((totalpig + 5) == totalicecream) {
       winner();
     } else if (((totalpig + 5) <= 25) && ((totalpig + 5) >= 1)) {
@@ -204,7 +226,7 @@ $(document).ready(function(){
     if (totalpig%5 == 1) {
       console.log('cant move');
     } else if ((totalpig - 1) == totalfire1 || (totalpig - 1) == totalfire2 || (totalpig - 1) == totalfire3) {
-      location.reload();
+      newboard();
     } else if ((totalpig - 1) == totalicecream) {
       winner();
     } else {// if (((totalpig%5 - 1) <= 25) && ((totalpig%5 - 1) >= 1)) {
@@ -225,7 +247,7 @@ $(document).ready(function(){
     if (totalpig%5 == 0) {
       console.log('cant move');
     } else if ((totalpig + 1) == totalfire1 || (totalpig + 1) == totalfire2 || (totalpig + 1) == totalfire3) {
-      location.reload();
+      newboard();
     } else if ((totalpig + 1) == totalicecream) {
       winner();
     } else {//if (((totalpig%5) <= 25) && ((totalpig%5) >= 1)) {
@@ -243,6 +265,7 @@ $(document).ready(function(){
       }
     }
   }
+  }
 });
 
   // var rc2 = squarearray[Math.floor(Math.random()*squarearray.length)];
@@ -257,6 +280,11 @@ $(document).ready(function(){
 
   $('#newgameMODAL button:last').click(function() {
     newboard();
+    starttimer();
+  });
+
+  $('#highscoresMODAL button').click(function() {
+    highscores = 0;
   });
 
 });
