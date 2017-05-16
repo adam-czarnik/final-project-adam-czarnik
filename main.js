@@ -4,6 +4,8 @@ $(document).ready(function(){
     $(this).html('<br />');
   });
 
+    $('[data-toggle="tooltip"]').tooltip();
+
   console.log('hi');
 
   //  $("#newgame").click(function(){
@@ -104,11 +106,29 @@ $(document).ready(function(){
 
   function winner() {
     win = Number(win + 1);
+    movessofar = 0;
     // var currentwins = $("#scorebar").css("width").charAt(2);
     // var newwins = (currentwins + 2) + "%";
     // console.log(newwins);
     // $("#scorebar").css("width", newwins);
     document.getElementById("wincount").innerHTML = win;
+
+    // var currentwinbar = $('.progress-bar-success').css('width');
+    // var currentwinbarnum = Number(currentwinbar + 10);
+    // $('.progress-bar-success').css('width', currentwinbarnum + "%");
+    // if (Number(currentwinbar) < 50) {
+    //   $('.progress-bar-success').css('width', "40%");
+    // } else {
+    //   var currentwinbarnum = Number(currentwinbar);
+    //   var winbarsec = Number(100/currentwinbarnum);
+    //   currentwinbarnum = Number(currentwinbarnum + winbarsec);
+    //   $('.progress-bar-success').css('width', currentwinbarnum);
+    // }
+
+    // var highscore = document.getElementById("totalwins").innerHTML;
+    // var bardivs = Number(100/highscore);
+    // var highscore = Number((document.getElementById("totalwins").innerHTML) + bardivs);
+    // $('#totalwins').html(highscore);
     // $(fsquare).html('<br />');
     // $(f2square).html('<br />');
     // $(f3square).html('<br />');
@@ -125,28 +145,40 @@ $(document).ready(function(){
     // var f3square = "#tc" + rc4;
     // var icsquare = "#tc" + rc5;
 
-    if (document.getElementById("wincount").innerHTML <= document.getElementById("totalwins").innerHTML) {
-
-    } else {
-      document.getElementById("totalwins").innerHTML = win;
-    }
-
     newboard();
   }
 
-  var highscores = 0;
+  var highscores = 1;
+  var newgameposs = true;
+  var newboardposs = false;
+  var piececol = false;
+  var movessofar = 0;
 
   function starttimer() {
     var timeremain = 0;
     var timer = setInterval(function(){
       timeremain = Number(timeremain + 5);
-      $('.progress-bar-danger').css('width', timeremain + "%")
+      $('.progress-bar-danger').css('width', timeremain + "%");
     }, 1000);
     setTimeout(function(){
       clearInterval(timer);
-      $('#highscoresMODAL').modal({backdrop: "static"});
-      $('.progress-bar-danger').css('width', "100%");
+      if ((Number(document.getElementById("wincount").innerHTML)) > (Number(document.getElementById("totalwins").innerHTML))) {
+        document.getElementById("totalwins").innerHTML = Number(win);
+      }
+      document.getElementById("wincount").innerHTML = win;
       highscores = 1;
+      movessofar = 0;
+      win = 0;
+      $('#highscoresMODAL').modal();
+      $('.progress-bar-danger').css('width', "100%");
+      $('.progress-bar-success').css('width', "0%");
+      newgameposs = true;
+      newboardposs = false;
+      highscores = 1;
+      movessofar = 0;
+      $('.gameboard td').each( function () {
+        $(this).html('<br />');
+      });
     }, 20000);
   }
 
@@ -154,6 +186,8 @@ $(document).ready(function(){
 
   $(document).keydown(function(e) {
     if (highscores == 0) {
+
+      movessofar = movessofar + 10;
 
     var fire1spot = $('.fire1').parent().attr('id');
     var firstfire1char = fire1spot.charAt(2);
@@ -181,6 +215,7 @@ $(document).ready(function(){
     if (e.keyCode == 38) { //UP
       if (totalpig <= 5) {
         console.log('cant move');
+        movessofar = movessofar - 10;
       } else if ((totalpig - 5) == totalfire1 || (totalpig - 5) == totalfire2 || (totalpig - 5) == totalfire3) {
         newboard();
       } else if ((totalpig - 5) == totalicecream) {
@@ -204,6 +239,7 @@ $(document).ready(function(){
   } else if (e.keyCode == 40) { //DOWN
     if (totalpig > 20) {
       console.log('cant move');
+      movessofar = movessofar - 10;
     } else if ((totalpig + 5) == totalfire1 || (totalpig + 5) == totalfire2 || (totalpig + 5) == totalfire3) {
       newboard();
     } else if ((totalpig + 5) == totalicecream) {
@@ -225,6 +261,7 @@ $(document).ready(function(){
   } else if (e.keyCode == 37) { //LEFT
     if (totalpig%5 == 1) {
       console.log('cant move');
+      movessofar = movessofar - 10;
     } else if ((totalpig - 1) == totalfire1 || (totalpig - 1) == totalfire2 || (totalpig - 1) == totalfire3) {
       newboard();
     } else if ((totalpig - 1) == totalicecream) {
@@ -246,6 +283,7 @@ $(document).ready(function(){
   } else if (e.keyCode == 39) { //RIGHT
     if (totalpig%5 == 0) {
       console.log('cant move');
+      movessofar = movessofar - 10;
     } else if ((totalpig + 1) == totalfire1 || (totalpig + 1) == totalfire2 || (totalpig + 1) == totalfire3) {
       newboard();
     } else if ((totalpig + 1) == totalicecream) {
@@ -278,13 +316,100 @@ $(document).ready(function(){
 
   // $("td:contains('<span class='glyphicon glyphicon-fire' aria-hidden='true'>')").css('color', 'white');
 
+  window.setInterval(function(){
+    if (newgameposs == false) {
+      $('.btn-danger').prop('disabled', true);
+    } else {
+      $('.btn-danger').prop('disabled', false);
+    }
+  }, 100);
+
+  window.setInterval(function(){
+    var totalwinsnum = Number(document.getElementById("totalwins").innerHTML);
+    var wincountnum = Number(document.getElementById("wincount").innerHTML);
+    var chunkpiece = Number(100/totalwinsnum);
+    var currentbarlength = Number(wincountnum * chunkpiece);
+    $('.progress-bar-success').css('width', currentbarlength + "%");
+    if (Number(document.getElementById("scorebar").style.width.nodeValue) >= 100) {
+      $('.progress-bar-success').css('width', "100%");
+    }
+  }, 100);
+
+  window.setInterval(function(){
+    if (newboardposs == false) {
+      $('.btn-warning').prop('disabled', true);
+    } else {
+      $('.btn-warning').prop('disabled', false);
+    }
+  }, 100);
+
+  window.setInterval(function(){
+    $('.progress-bar-warning').css('width', movessofar + "%");
+    if (movessofar >= 100) {
+      newboard();
+      movessofar = 0;
+    }
+  }, 100);
+
+  window.setInterval(function(){
+    if (piececol == true) {
+      $('.glyphicon-piggy-bank').css("color","pink");
+      $('.glyphicon-ice-lolly-tasted').css("color","brown");
+      $('.glyphicon-fire').css("color","orange");
+    } else {
+      $('.glyphicon-piggy-bank').css("color","black");
+      $('.glyphicon-ice-lolly-tasted').css("color","black");
+      $('.glyphicon-fire').css("color","black");
+    }
+  }, 100);
+
   $('#newgameMODAL button:last').click(function() {
+    highscores = 0;
+    newgameposs = false;
+    newboardposs = true;
+    document.getElementById("wincount").innerHTML = "0";
     newboard();
     starttimer();
   });
 
-  $('#highscoresMODAL button').click(function() {
-    highscores = 0;
+  $('#newboardMODAL button:last').click(function() {
+
+    if ($('.glyphicon-piggy-bank').parent().attr('id')) {
+      newboard();
+      console.log('if');
+    } else {
+      console.log('else');
+      newboard();
+      starttimer();
+      document.getElementById("wincount").innerHTML = "0";
+      highscores = 0;
+      newgameposs = false;
+    }
   });
+
+  $('#highscoresMODAL button').click(function() {
+  });
+
+  $('#piececolor').click(function() {
+    if (piececol == false) {
+      document.getElementById("piececolor").innerHTML = "Black";
+      piececol = true;
+      // $('.btn-danger').prop('disabled', true);
+    } else {
+      document.getElementById("piececolor").innerHTML = "Colorful";
+      piececol = false;
+      // $('.btn-danger').prop('disabled', false);
+    }
+  });
+
+  // $('#fliphighscores').click(function() {
+  //   if (newgameposs == false) {
+  //     newgameposs = true;
+  //     console.log(newgameposs);
+  //   } else {
+  //     newgameposs = false;
+  //     console.log(newgameposs);
+  //   }
+  // });
 
 });
